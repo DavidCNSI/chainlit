@@ -251,7 +251,7 @@ export class WavRecorder {
         });
         const tracks = stream.getTracks();
         tracks.forEach((track) => track.stop());
-      } catch (e) {
+      } catch (_) {
         window.alert('You must grant microphone access to use this feature.');
       }
     }
@@ -317,7 +317,7 @@ export class WavRecorder {
         config.audio = { deviceId: { exact: deviceId } };
       }
       this.stream = await navigator.mediaDevices.getUserMedia(config);
-    } catch (err) {
+    } catch (_) {
       throw new Error('Could not start media stream');
     }
 
@@ -422,6 +422,16 @@ export class WavRecorder {
     this.log('Pausing ...');
     await this._event('stop');
     this.recording = false;
+    return true;
+  }
+
+  async resume() {
+    if (!this.processor) {
+      return false;
+    }
+    this.log('Resuming ...');
+    await this._event('start');
+    this.recording = true;
     return true;
   }
 
@@ -545,4 +555,5 @@ export class WavRecorder {
   }
 }
 
+// eslint-disable-next-line no-undef
 globalThis.WavRecorder = WavRecorder;
