@@ -160,7 +160,21 @@ const useChatSession = () => {
             });
             isFirstChunk = false;
           });
-          wavStreamPlayer.onStop = () => setIsAiSpeaking(false);
+          wavStreamPlayer.onStop = async () => {
+            setIsAiSpeaking(false);
+            // await wavRecorder.record(async (data) => {
+            //   const elapsedTime = Date.now() - startTime;
+            //   socket.emit('audio_chunk', {
+            //     isStart: isFirstChunk,
+            //     mimeType,
+            //     elapsedTime,
+            //     data: data.mono
+            //   });
+            //   isFirstChunk = false;
+            // });
+            wavRecorder.resume();
+            // wavRecorder.pause();
+          };
         } else {
           await wavRecorder.end();
           await wavStreamPlayer.interrupt();
@@ -169,6 +183,9 @@ const useChatSession = () => {
       });
 
       socket.on('audio_chunk', (chunk: OutputAudioChunk) => {
+        if (wavRecorder.recording) {
+          wavRecorder.pause();
+        }
         wavStreamPlayer.add16BitPCM(chunk.data, chunk.track);
         setIsAiSpeaking(true);
       });
