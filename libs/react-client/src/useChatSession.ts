@@ -162,18 +162,7 @@ const useChatSession = () => {
           });
           wavStreamPlayer.onStop = async () => {
             setIsAiSpeaking(false);
-            // await wavRecorder.record(async (data) => {
-            //   const elapsedTime = Date.now() - startTime;
-            //   socket.emit('audio_chunk', {
-            //     isStart: isFirstChunk,
-            //     mimeType,
-            //     elapsedTime,
-            //     data: data.mono
-            //   });
-            //   isFirstChunk = false;
-            // });
             wavRecorder.resume();
-            // wavRecorder.pause();
           };
         } else {
           await wavRecorder.end();
