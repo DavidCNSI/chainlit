@@ -18,6 +18,7 @@ import {
   currentThreadIdState,
   elementState,
   firstUserInteraction,
+  isAiBlockingState,
   isAiSpeakingState,
   loadingState,
   messagesState,
@@ -77,6 +78,8 @@ const useChatSession = () => {
 
   const [currentThreadId, setCurrentThreadId] =
     useRecoilState(currentThreadIdState);
+
+  const isAiBlocking = useRecoilValue(isAiBlockingState);
 
   // Use currentThreadId as thread id in websocket header
   useEffect(() => {
@@ -162,7 +165,9 @@ const useChatSession = () => {
           });
           wavStreamPlayer.onStop = async () => {
             setIsAiSpeaking(false);
-            wavRecorder.resume();
+            if (isAiBlocking) {
+              wavRecorder.resume();
+            }
           };
         } else {
           await wavRecorder.end();
@@ -172,7 +177,7 @@ const useChatSession = () => {
       });
 
       socket.on('audio_chunk', (chunk: OutputAudioChunk) => {
-        if (wavRecorder.recording) {
+        if (wavRecorder.recording && isAiBlocking) {
           wavRecorder.pause();
         }
         wavStreamPlayer.add16BitPCM(chunk.data, chunk.track);

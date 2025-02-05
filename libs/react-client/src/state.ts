@@ -204,3 +204,8 @@ export const currentThreadIdState = atom<string | undefined>({
   key: 'CurrentThreadId',
   default: undefined
 });
+
+export const isAiBlockingState = atom({
+  key: 'isAiBlockingState',
+  default: false
+});
